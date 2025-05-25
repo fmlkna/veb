@@ -32,8 +32,8 @@ class Post(models.Model):
         default=Status.DRAFT
         )
 
-    objects = models.Manager() # менеджер, применяемый по умолчанию
-    published = PublishedManager() # конкретно-прикладной менеджер
+    objects = models.Manager() 
+    published = PublishedManager() 
 
     class Meta:
         ordering = ['-publish']
