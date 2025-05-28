@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Страница экзаменов</title>
+</head>
+<body>
+    <h1>{{ fio }} - {{ group }}</h1>
+    
+    <h2>Список опубликованных экзаменов:</h2>
+    
+    {% for exam in exams %}
+    <div style="margin-bottom: 30px; border: 1px solid #ccc; padding: 15px;">
+        <h3>Название экзамена: {{ exam.exam_name }}</h3>
+        <p><strong>Дата создания:</strong> {{ exam.created_at|date:"d.m.Y H:i" }}</p>
+        <p><strong>Дата проведения:</strong> {{ exam.exam_date|date:"d.m.Y" }}</p>
+        
+        {% if exam.exam_image %}
+        <p><strong>Изображение задания:</strong></p>
+        <img src="{{ exam.exam_image.url }}" alt="Изображение экзамена" width="200">
+        {% endif %}
+        
+        <p><strong>Назначенные пользователи:</strong></p>
+        <ul>
+            {% for user in exam.assigned_users.all %}
+            <li>{{ user.username }} ({{ user.email }})</li>
+            {% endfor %}
+        </ul>
+        
+        <p><strong>Статус:</strong> {{ exam.is_public|yesno:"Опубликован,Не опубликован" }}</p>
+    </div>
+    {% empty %}
+    <p>Нет опубликованных экзаменов.</p>
+    {% endfor %}
+</body>
+</html>
