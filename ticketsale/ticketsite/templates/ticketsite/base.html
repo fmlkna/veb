@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Билетная система</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/">Главная</a>
+            <a href="/events/">Мероприятия</a>
+            <a href="/contacts/">Контакты</a>
+            {% if user.is_authenticated %}
+                <a href="/profile/">Личный кабинет</a>
+                <a href="/logout/">Выйти</a>
+            {% else %}
+                <a href="/login/">Войти</a>
+            {% endif %}
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

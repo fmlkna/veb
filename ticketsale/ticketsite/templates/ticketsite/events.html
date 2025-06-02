@@ -1,0 +1,12 @@
+{% extends 'ticketsite/base.html' %}
+{% block content %}
+    <h1>Мероприятия</h1>
+    {% for event in events %}
+        <div class="event">
+            <h3>{{ event.title }}</h3>
+            <p>{{ event.description }}</p>
+            <p>Дата: {{ event.date_time }}</p>
+            <a href="/buy/{{ event.id }}/">Купить билет</a>
+        </div>
+    {% endfor %}
+{% endblock %}
