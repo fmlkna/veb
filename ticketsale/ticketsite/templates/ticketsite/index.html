@@ -1,13 +1,17 @@
 {% extends 'ticketsite/base.html' %}
+{% load static %}
+
 {% block content %}
-    <h1>Найдите билеты на мероприятия</h1>
-    <form action="/events/" method="get">
-        <select name="city">
+<div class="city-selector">
+    <h2>Выберите город</h2>
+    <form method="get" action="/events/">
+        <select name="city" class="city-select">
             <option value="">Все города</option>
             {% for city in cities %}
                 <option value="{{ city.id }}">{{ city.name }}</option>
             {% endfor %}
         </select>
-        <button type="submit">Найти</button>
+        <button type="submit" class="search-button">Найти</button>
     </form>
+</div>
 {% endblock %}

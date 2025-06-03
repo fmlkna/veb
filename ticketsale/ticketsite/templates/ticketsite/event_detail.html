@@ -1,0 +1,7 @@
+{% extends 'ticketsite/base.html' %}
+
+{% block content %}
+<h1>{{ event.title }}</h1>
+<p>Дата и время: {{ event.datetime }}</p>
+<p>Описание: {{ event.description }}</p>
+{% endblock %}

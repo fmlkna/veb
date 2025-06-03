@@ -1,12 +1,49 @@
 {% extends 'ticketsite/base.html' %}
+{% load static %}
+
 {% block content %}
-    <h1>Мероприятия</h1>
-    {% for event in events %}
-        <div class="event">
-            <h3>{{ event.title }}</h3>
-            <p>{{ event.description }}</p>
-            <p>Дата: {{ event.date_time }}</p>
-            <a href="/buy/{{ event.id }}/">Купить билет</a>
+<div class="events-page">
+    <h1 class="page-title">Мероприятия</h1>
+    
+    <div class="events-grid">
+        {% for event in events %}
+        <div class="event-card">
+            <div class="event-image-container">
+                {% if event.image %}
+                    <img src="{{ event.image.url }}" alt="{{ event.title }}" class="event-image">
+                {% else %}
+                    <div class="event-image-placeholder">
+                        {% if event.type == 'cinema' %}🎬{% endif %}
+                        {% if event.type == 'theatre' %}🎭{% endif %}
+                        {% if event.type == 'concert' %}🎵{% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="event-content">
+                <h3 class="event-title">
+                    <a href="{% url 'event_detail' event.id %}">{{ event.title }}</a>
+                </h3>
+                
+                <div class="event-meta">
+                    <span class="event-type {{ event.type }}">
+                        {{ event.get_type_display }}
+                    </span>
+                    <span class="event-date">
+                        {{ event.date_time|date:"d E Y, H:i" }}
+                    </span>
+                </div>
+                
+                <p class="event-short-desc">
+                    {{ event.description|truncatechars:100 }}
+                </p>
+                
+                <a href="{% url 'event_detail' event.id %}" class="event-button">
+                    Подробнее
+                </a>
+            </div>
         </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

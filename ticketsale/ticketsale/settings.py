@@ -130,3 +130,11 @@ STATICFILES_DIRS = [
 LOGIN_URL = '/login/'
 
 AUTH_USER_MODEL = 'ticketsite.User'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+SESSION_COOKIE_SECURE = False  
+CSRF_COOKIE_SECURE = False     
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False

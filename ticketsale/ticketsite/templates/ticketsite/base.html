@@ -1,15 +1,127 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Билетная система</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AKTickets{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    {% block extrahead %}{% endblock %}
+    <style>
+    header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #e6007a;
+        color: #fff;
+        padding: 0 32px 0 32px;
+        min-height: 60px;
+        box-shadow: 0 2px 8px 0 rgba(0,0,0,0.04);
+    }
+    .logo {
+        font-family: 'Pacifico', cursive, Arial, sans-serif;
+        font-size: 2em;
+        letter-spacing: 2px;
+        color: #fff;
+        text-shadow: 1px 1px 2px #a60052;
+        user-select: none;
+    }
+    nav {
+        display: flex;
+        gap: 32px;
+    }
+    nav a, nav button {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 1.09em;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 0 3px;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    nav a:hover, nav button:hover {
+        color: #ffd2f4;
+    }
+    #contacts-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0; top: 0;
+        width: 100vw; height: 100vh;
+        background: rgba(0,0,0,0.5);
+        align-items: center;
+        justify-content: center;
+    }
+    #contacts-modal .modal-content {
+        background: #fff;
+        margin: auto;
+        padding: 22px 30px 16px 30px;
+        border-radius: 10px;
+        width: 320px;
+        position: relative;
+        text-align: center;
+        box-shadow: 0 4px 18px 2px rgba(0,0,0,0.09);
+    }
+    #contacts-modal .close {
+        position: absolute;
+        right: 20px; top: 15px;
+        font-size: 24px;
+        font-weight: bold;
+        color: #aaa;
+        cursor: pointer;
+    }
+    #contacts-modal .close:hover { color: #e6007a; }
+    .contact-email {
+        font-family: monospace;
+        font-size: 1.1em;
+        margin: 14px 0;
+        color: #e6007a;
+        word-break: break-all;
+    }
+    .copy-email {
+        margin-top: 8px;
+        padding: 8px 20px;
+        border-radius: 5px;
+        border: none;
+        color: #fff;
+        background: #e6007a;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background 0.2s;
+    }
+    .copy-email:hover {
+        background: #b8005c;
+    }
+    #copy-status {
+        color: green;
+        margin-top: 10px;
+        display: none;
+        font-size: 0.95em;
+    }
+    body {
+        background: #ffe3f3;
+        min-height: 100vh;
+        margin: 0;
+        font-family: Arial, sans-serif;
+    }
+    main {
+        padding-top: 40px;
+        max-width: 900px;
+        margin: auto;
+    }
+    </style>
 </head>
 <body>
     <header>
+        <div class="logo">
+            AKTickets
+        </div>
         <nav>
             <a href="/">Главная</a>
-            <a href="/events/">Мероприятия</a>
-            <a href="/contacts/">Контакты</a>
+            <button type="button" id="contacts-btn">Контакты</button>
             {% if user.is_authenticated %}
                 <a href="/profile/">Личный кабинет</a>
                 <a href="/logout/">Выйти</a>
@@ -18,8 +130,39 @@
             {% endif %}
         </nav>
     </header>
+    <div id="contacts-modal">
+        <div class="modal-content">
+            <span class="close" title="Закрыть">&times;</span>
+            <h2>Контакты</h2>
+            <p>По всем вопросам обращайтесь на почту:</p>
+            <p class="contact-email" id="email-contact">fmlkna@yandex.ru</p>
+            <button class="copy-email">Скопировать email</button>
+            <div id="copy-status">Скопировано!</div>
+        </div>
+    </div>
     <main>
         {% block content %}{% endblock %}
     </main>
+    <script>
+    document.getElementById('contacts-btn').onclick = function() {
+        document.getElementById('contacts-modal').style.display = "flex";
+    };
+    document.querySelector('#contacts-modal .close').onclick = function() {
+        document.getElementById('contacts-modal').style.display = "none";
+    };
+    document.getElementById('contacts-modal').onclick = function(e) {
+        if (e.target === this) this.style.display = "none";
+    };
+    document.querySelector('.copy-email').onclick = function() {
+        const email = document.getElementById('email-contact').textContent;
+        navigator.clipboard.writeText(email).then(function() {
+            document.getElementById('copy-status').style.display = "block";
+            setTimeout(function(){
+                document.getElementById('copy-status').style.display = "none";
+            }, 1200);
+        });
+    };
+    </script>
+    {% block extrascript %}{% endblock %}
 </body>
 </html>
