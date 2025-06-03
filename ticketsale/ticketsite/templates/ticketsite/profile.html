@@ -6,7 +6,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background:#f8f8f8;
+            background:#e3c9d9;
             padding:30px;
         }
         .profile-card {
@@ -16,6 +16,7 @@
             max-width:600px;
             border-radius:12px;
             box-shadow:0 2px 10px rgba(0,0,0,0.06);
+            text-align: center;
         }
         h2, h3 {
             margin-top:0;
@@ -37,26 +38,25 @@
             margin-top:25px;
         }
         .actions a {
-            background:#e9699a;
+            background:#691435;
             color:#fff;
             padding:9px 20px;
             border-radius:5px;
             text-decoration:none;
-            margin-right:10px;
             display:inline-block;
+            min-width: 100px;
+            font-size: 22px;
         }
-        .actions a:last-child {
-            background: #780c3e;
-        }
+
     </style>
 </head>
 <body>
     <div class="profile-card">
         <h2>Личный кабинет</h2>
-        <h3>Привет, {% if request.user.first_name %}{{ request.user.first_name }} {{ request.user.last_name }}{% else %}{{ request.user.username }}{% endif %}!</h3>
+        <h3>Здравствуйте, {% if request.user.first_name %}{{ request.user.first_name }} {{ request.user.last_name }}{% else %}{{ request.user.username }}{% endif %}!</h3>
         <hr>
         <div>
-            <h4>Ваши купленные билеты</h4>
+            <h4>Ваши билеты</h4>
             <table>
                 <thead>
                     <tr>
@@ -85,7 +85,6 @@
             </table>
         </div>
         <div class="actions">
-            <a href="#">Редактировать профиль</a>
             <a href="{% url 'logout' %}">Выйти</a>
         </div>
     </div>
