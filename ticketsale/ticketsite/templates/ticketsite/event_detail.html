@@ -1,7 +1,46 @@
 {% extends 'ticketsite/base.html' %}
 
 {% block content %}
-<h1>{{ event.title }}</h1>
-<p>Дата и время: {{ event.datetime }}</p>
-<p>Описание: {{ event.description }}</p>
+<div class="event-detail-container">
+    <h1>{{ event.title }}</h1>
+    <p class="event-meta">Дата и время: {{ event.date_time|date:"d.m.Y H:i" }}</p>
+    <div class="event-description">
+        <p>{{ event.description }}</p>
+    </div>
+    
+    <div class="ticket-purchase-section mt-4">
+        {% if user.is_authenticated %}
+            <a href="{% url 'buy_ticket' event.id %}" class="btn btn-primary btn-lg">
+                Купить билет
+            </a>
+        {% else %}
+            <div class="alert alert-info">
+                Для покупки билета <a href="{% url 'login' %}">войдите</a> или 
+                <a href="{% url 'register' %}">зарегистрируйтесь</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.event-detail-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+.event-meta {
+    font-size: 1.1rem;
+    color: #8b1238;
+}
+.event-description {
+    margin: 20px 0;
+    line-height: 1.6;
+}
+.ticket-purchase-section {
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+</style>
 {% endblock %}

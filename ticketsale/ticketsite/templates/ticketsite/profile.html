@@ -6,86 +6,179 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background:#e3c9d9;
-            padding:30px;
+            background: #f1d5de;
+            padding: 20px;
+            margin: 0;
+        }
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
         .profile-card {
-            background:#fff;
-            padding:30px;
-            margin:auto;
-            max-width:600px;
-            border-radius:12px;
-            box-shadow:0 2px 10px rgba(0,0,0,0.06);
-            text-align: center;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
         }
         h2, h3 {
-            margin-top:0;
+            margin-top: 0;
+            color: #420a1f;
+            font-size: 30px;
+        }
+        .user-info {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
         }
         table {
-            width:100%;
+            width: 100%;
             border-collapse: collapse;
-            margin-top:20px;
+            margin-top: 25px;
+            font-size: 14px;
         }
         th, td {
-            padding:10px 8px;
-            border-bottom:1px solid #e0e0e0;
-            text-align:left;
+            padding: 15px 12px;
+            border-bottom: 1px solid #f7e0e7;
+            text-align: left;
+            vertical-align: top;
         }
-        tr:last-child td {
-            border-bottom: none;
+        th {
+            background-color: #c9658b;
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        .status-paid {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .status-pending {
+            color: #ffc107;
+            font-weight: bold;
         }
         .actions {
-            margin-top:25px;
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
         }
-        .actions a {
-            background:#691435;
-            color:#fff;
-            padding:9px 20px;
-            border-radius:5px;
-            text-decoration:none;
-            display:inline-block;
-            min-width: 100px;
-            font-size: 22px;
+        .btn {
+            background: #cd5885;
+            color: #fff;
+            padding: 12px 25px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            min-width: 120px;
+            text-align: center;
         }
-
+        .btn:hover {
+            background: #9c0f43;
+            transform: translateY(-2px);
+        }
+        .no-tickets {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-style: italic;
+            font-size: 16px;
+        }
+        .ticket-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .print-btn {
+            background: #c4194f;
+        }
+        .print-btn:hover {
+            background: #40222b;
+        }
+        .ticket-info {
+            line-height: 1.6;
+        }
+        .order-id {
+            font-weight: bold;
+            color: #a2486b;
+        }
     </style>
 </head>
 <body>
-    <div class="profile-card">
-        <h2>Личный кабинет</h2>
-        <h3>Здравствуйте, {% if request.user.first_name %}{{ request.user.first_name }} {{ request.user.last_name }}{% else %}{{ request.user.username }}{% endif %}!</h3>
-        <hr>
-        <div>
-            <h4>Ваши билеты</h4>
-            <table>
-                <thead>
-                    <tr>
-                        <th>№</th>
-                        <th>Мероприятие</th>
-                        <th>Дата</th>
-                        <th>Место</th>
-                        <th>Статус</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for order in orders %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ order.ticket.event.title }}</td>
-                        <td>{{ order.ticket.event.date_time|date:"d.m.Y H:i" }}</td>
-                        <td>{{ order.ticket.event.place.name }}</td>
-                        <td>{{ order.get_payment_status_display }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" style="text-align:center; color:#888;">У вас пока нет билетов</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="actions">
-            <a href="{% url 'logout' %}">Выйти</a>
+    <div class="profile-container">
+        <div class="profile-card">
+            <div class="user-info">
+                <h2>Личный кабинет</h2>
+                <h3>Здравствуйте, {% if request.user.first_name %}{{ request.user.first_name }} {{ request.user.last_name }}{% else %}{{ request.user.username }}{% endif %}!</h3>
+            </div>
+            
+            <h4>Ваши заказы</h4>
+            {% if orders %}
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>№ заказа</th>
+                            <th>Дата заказа</th>
+                            <th>Мероприятие</th>
+                            <th>Место проведения</th>
+                            <th>Дата мероприятия</th>
+                            <th>Билеты</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td class="order-id">#{{ order.id }}</td>
+                            <td>{{ order.order_date|date:"d.m.Y H:i" }}</td>
+                            <td class="ticket-info">
+                                {{ order.ticket.event.title }}
+                            </td>
+                            <td>
+                                {{ order.ticket.event.place.name }}, {{ order.ticket.event.place.city }}
+                            </td>
+                            <td>
+                                {{ order.ticket.event.date_time|date:"d.m.Y H:i" }}
+                            </td>
+                            <td class="ticket-info">
+                                • Ряд {{ order.ticket.row }}, Место {{ order.ticket.seat_no }}
+                            </td>
+                            <td>
+                                {% if order.payment_status == 'paid' %}
+                                    <span class="status-paid">Оплачен</span>
+                                {% else %}
+                                    <span class="status-pending">Ожидает оплаты</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="ticket-actions">
+                                    <button onclick="window.print()" class="btn print-btn" style="padding: 8px 15px;">Печать</button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="no-tickets">
+                <p>У вас пока нет заказов</p>
+            </div>
+            {% endif %}
+            
+            <div class="actions">
+                <a href="{% url 'index' %}" class="btn">На главную</a>
+                <a href="{% url 'logout' %}" class="btn">Выйти</a>
+            </div>
         </div>
     </div>
 </body>

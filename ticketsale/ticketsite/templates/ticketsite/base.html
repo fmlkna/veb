@@ -120,7 +120,7 @@
             AKTickets
         </div>
         <nav>
-            <a href="/">Главная</a>
+            <a href="{% url 'index' %}">Главная</a>
             <button type="button" id="contacts-btn">Контакты</button>
             {% if user.is_authenticated %}
                 <a href="/profile/">Личный кабинет</a>

@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
-from .models import Event, City, Order, User
+from .models import Event, City, Order, User, Ticket
 
 @csrf_protect
 def login_view(request):
@@ -50,6 +51,43 @@ def user_register(request):
     
     return render(request, 'ticketsite/register.html')
 
+@login_required
+def buy_ticket(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    
+    if request.method == 'POST':
+        ticket_id = request.POST.get('ticket_id')
+        if not ticket_id:
+            messages.error(request, 'Не выбран билет')
+            return redirect('buy_ticket', event_id=event_id)
+            
+        try:
+            ticket = Ticket.objects.get(id=ticket_id, status='available')
+            order = Order.create_order(request.user, [ticket])
+            return redirect('order_detail', order_id=order.id)
+        except Ticket.DoesNotExist:
+            messages.error(request, 'Билет недоступен')
+            return redirect('buy_ticket', event_id=event_id)
+    
+    tickets = Ticket.objects.filter(
+        event=event,
+        status='available'
+    ).order_by('row', 'seat_no')
+    
+    return render(request, 'ticketsite/buy_ticket.html', {
+        'event': event,
+        'tickets': tickets
+    })
+
+@login_required
+def order_detail(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    tickets = order.tickets.all()  
+    return render(request, 'ticketsite/order_detail.html', {
+        'order': order,
+        'tickets': tickets
+    })
+
 def index(request):
     cities = City.objects.all()
     return render(request, 'ticketsite/index.html', {'cities': cities})
@@ -61,10 +99,11 @@ def events(request):
         events = events.filter(place__city_id=city_id)
     return render(request, 'ticketsite/events.html', {'events': events})
 
+@login_required
 def profile(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    orders = Order.objects.filter(user=request.user)
+    orders = Order.objects.filter(user=request.user).prefetch_related('tickets', 'tickets__event', 'tickets__event__place')
     return render(request, 'ticketsite/profile.html', {'orders': orders})
 
 def contacts(request):

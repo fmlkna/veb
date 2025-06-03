@@ -77,16 +77,23 @@ class Event(models.Model):
 class Ticket(models.Model):
     STATUS_CHOICES = [
         ('available', 'Доступен'),
-        ('booked', 'Забронирован'),
         ('sold', 'Продан'),
     ]
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    seat_number = models.CharField(max_length=10)
+    row = models.IntegerField(default=1)
+    seat_no = models.CharField(max_length=10)  
     price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='available')
-
+    order = models.ForeignKey(
+        'Order',
+        related_name='tickets',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Заказ"
+    )
     def __str__(self):
-        return f"Билет на {self.event} (место {self.seat_number})"
+        return f"Билет на {self.event} (место {self.seat_no})"
 
 # Заказы
 class Order(models.Model):
@@ -95,9 +102,19 @@ class Order(models.Model):
         ('paid', 'Оплачен'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+    ticket = models.ForeignKey('Ticket', related_name='orders', on_delete=models.CASCADE)
     order_date = models.DateTimeField(auto_now_add=True)
     payment_status = models.CharField(max_length=10, choices=PAYMENT_STATUS_CHOICES, default='pending')
 
+    @classmethod
+    def create_order(cls, user, tickets):
+        """Создает заказ и помечает билет как проданный"""
+        order = cls.objects.create(user=user)
+        for ticket in tickets:
+            ticket.status = 'sold'
+            ticket.order = order
+            ticket.save()
+        return order
+    
     def __str__(self):
         return f"Заказ #{self.id} ({self.user.username})"

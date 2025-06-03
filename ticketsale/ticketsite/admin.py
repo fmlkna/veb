@@ -27,15 +27,18 @@ class EventAdmin(admin.ModelAdmin):
     display_image.short_description = 'Превью'
 
 class TicketAdmin(admin.ModelAdmin):
-    list_display = ('event', 'seat_number', 'price', 'status', 'order_link')
+    list_display = ('event', 'row', 'seat_no', 'price', 'status', 'order_link')
     list_filter = ('event', 'status', 'event__place')
-    search_fields = ('event__title', 'seat_no')
-    raw_id_fields = ('event',)
+    search_fields = ('event__title', 'seat_no', 'row')
+    raw_id_fields = ('event', 'order')
 
     def order_link(self, obj):
-        if hasattr(obj, 'order'):
-            return format_html('<a href="/admin/ticketsite/order/{}/change/">{}</a>', 
-                             obj.order.id, obj.order.id)
+        if obj.order:
+            return format_html(
+                '<a href="/admin/ticketsite/order/{}/change/">{}</a>',
+                obj.order.id,
+                obj.order.id
+            )
         return "Нет заказа"
     order_link.short_description = 'Заказ'
 
