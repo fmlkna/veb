@@ -1,34 +1,53 @@
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
-from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
-from .models import Event, City, Order
+from .models import Event, City, Order, User
 
-User = get_user_model()
 @csrf_protect
 def login_view(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
+        username = request.POST.get('username') 
         password = request.POST.get('password')
-        user = authenticate(request, username=email, password=password)
+        
+        user = authenticate(request, username=username, password=password)
+        
         if user is not None:
             login(request, user)
             return redirect('profile')
         else:
-            messages.error(request, 'Неверный email или пароль')
+            try:
+                User.objects.get(username=username)
+                messages.error(request, 'Неверный пароль')
+            except User.DoesNotExist:
+                messages.error(request, 'Пользователь с таким логином не найден')
+    
     return render(request, 'ticketsite/login.html')
 
 def user_register(request):
     if request.method == 'POST':
+        username = request.POST.get('username')
         email = request.POST.get('email')
         password = request.POST.get('password')
-        if User.objects.filter(email=email).exists():
-            messages.error(request, 'Email уже зарегистрирован!')
+        first_name = request.POST.get('first_name', '')
+        last_name = request.POST.get('last_name', '')
+        
+        if User.objects.filter(username=username).exists():
+            messages.error(request, 'Пользователь с таким логином уже существует!')
+        elif User.objects.filter(email=email).exists():
+            messages.error(request, 'Пользователь с таким email уже существует!')
         else:
-            user = User.objects.create_user(email=email, password=password)
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name
+            )
             login(request, user)
             return redirect('profile')
+    
     return render(request, 'ticketsite/register.html')
 
 def index(request):

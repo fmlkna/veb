@@ -7,7 +7,7 @@
     <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
         <div class="form-group">
-            <input type="email" name="email" placeholder="Email" required class="form-control">
+            <input type="text" name="username" placeholder="Логин" required class="form-control">
         </div>
         <div class="form-group">
             <input type="password" name="password" placeholder="Пароль" required class="form-control">

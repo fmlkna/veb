@@ -1,14 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-# Модель пользователя
 class User(AbstractUser):
     ROLE_CHOICES = [
         ('user', 'Обычный пользователь'),
         ('admin', 'Администратор'),
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user')
-
+    first_name = models.CharField(max_length=30, blank=True)
+    last_name = models.CharField(max_length=150, blank=True)
+    
     groups = models.ManyToManyField(
         'auth.Group',
         verbose_name='groups',

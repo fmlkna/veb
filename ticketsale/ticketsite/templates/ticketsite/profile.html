@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Личный кабинет</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background:#f8f8f8;
+            padding:30px;
+        }
+        .profile-card {
+            background:#fff;
+            padding:30px;
+            margin:auto;
+            max-width:600px;
+            border-radius:12px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.06);
+        }
+        h2, h3 {
+            margin-top:0;
+        }
+        table {
+            width:100%;
+            border-collapse: collapse;
+            margin-top:20px;
+        }
+        th, td {
+            padding:10px 8px;
+            border-bottom:1px solid #e0e0e0;
+            text-align:left;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .actions {
+            margin-top:25px;
+        }
+        .actions a {
+            background:#e9699a;
+            color:#fff;
+            padding:9px 20px;
+            border-radius:5px;
+            text-decoration:none;
+            margin-right:10px;
+            display:inline-block;
+        }
+        .actions a:last-child {
+            background: #780c3e;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-card">
+        <h2>Личный кабинет</h2>
+        <h3>Привет, {% if request.user.first_name %}{{ request.user.first_name }} {{ request.user.last_name }}{% else %}{{ request.user.username }}{% endif %}!</h3>
+        <hr>
+        <div>
+            <h4>Ваши купленные билеты</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Мероприятие</th>
+                        <th>Дата</th>
+                        <th>Место</th>
+                        <th>Статус</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ order.ticket.event.title }}</td>
+                        <td>{{ order.ticket.event.date_time|date:"d.m.Y H:i" }}</td>
+                        <td>{{ order.ticket.event.place.name }}</td>
+                        <td>{{ order.get_payment_status_display }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align:center; color:#888;">У вас пока нет билетов</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="actions">
+            <a href="#">Редактировать профиль</a>
+            <a href="{% url 'logout' %}">Выйти</a>
+        </div>
+    </div>
+</body>
+</html>

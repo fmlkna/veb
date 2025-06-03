@@ -28,7 +28,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -134,7 +133,10 @@ AUTH_USER_MODEL = 'ticketsite.User'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-SESSION_COOKIE_SECURE = False  
-CSRF_COOKIE_SECURE = False     
-SESSION_COOKIE_HTTPONLY = True
-CSRF_COOKIE_HTTPONLY = False
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/profile/'
+LOGOUT_REDIRECT_URL = '/'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
